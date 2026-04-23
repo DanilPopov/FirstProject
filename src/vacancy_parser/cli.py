@@ -21,6 +21,7 @@ def build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command", required=True)
 
     sub.add_parser("initdb", help="Create database tables")
+    sub.add_parser("bot", help="Run the Telegram bot (long polling)")
 
     p_fetch = sub.add_parser("fetch", help="Fetch vacancies from hh.ru into the DB")
     p_fetch.add_argument("--text", help="Keyword search (hh `text`)")
@@ -73,6 +74,11 @@ async def cmd_fetch(args: argparse.Namespace) -> None:
     )
 
 
+def cmd_bot() -> None:
+    from vacancy_parser.bot.app import run as run_bot
+    run_bot()
+
+
 def main() -> None:
     setup_logging()
     args = build_parser().parse_args()
@@ -80,6 +86,8 @@ def main() -> None:
         asyncio.run(cmd_initdb())
     elif args.command == "fetch":
         asyncio.run(cmd_fetch(args))
+    elif args.command == "bot":
+        cmd_bot()
 
 
 if __name__ == "__main__":
